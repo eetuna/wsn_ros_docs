@@ -1,0 +1,84 @@
+cwru_base notes, wsn, Jan 2015
+
+twist_receiver.py: this is the  interface to relay twist commands from ROS to cRIO
+  subscribes to /cmd_vel, receives a twist command, 
+  handles variations of defined forward direction, right/left swap, speed limit, omega limit
+  receives twist commands and relays these to the cRIO for servo execution
+
+crio_receiver.cpp:  this is the interface to relay sensor data from cRIO to ROS
+  cleverly accounts for fwd/rvrs operation (via "push_casters_" value)
+  handles LOTS of data, including diagnostics (voltage, trans ratios, encoder info, GPS, yaw-rate...)
+  routine: handlePosePacket(...) does:
+     contains:
+        flipped_pose_pub_ = nh_.advertise<cwru_base::Pose>("flipped_pose",1);
+        interprets cRIO packets as: Pose p;
+    p.x = swapped_packet.x;
+    p.y = swapped_packet.y;
+    p.theta = swapped_packet.theta;
+    p.vel = swapped_packet.vel;
+    p.omega = swapped_packet.omega;  
+     and cRIO time stamp;
+    flipped_pose_pub_.publish(p2);
+    (this is close to, but not identical to "odom"; still need odom translation)
+
+
+odom_translator.py: 
+        // subscribes to topic "pose", as published by crio_receiver
+        // converts cRIO message into a "Pose" message;
+        // note: "Pose" is a cwru_base message type
+        // also need to import nav_msgs/Odometry for odom_msg; and geometry_msgs...
+        // converts into an odom message and republishes to topic "odom"
+        // is sensitive to parameter "push_casters"
+        // publishes frame id "base_link' relative to frame id 'odom'
+
+     	quaternion = tf.transformations.quaternion_about_axis(theta, (0,0,1))
+	odom_msg.header.frame_id = 'odom'
+
+	odom_msg.pose.pose.position.x = pose.x
+	odom_msg.pose.pose.position.y = pose.y
+	odom_msg.pose.pose.position.z = 0.0
+	odom_msg.pose.pose.orientation = Quaternion(*quaternion)
+
+	odom_msg.child_frame_id = 'base_link'
+	odom_msg.twist.twist.linear.x = pose.vel
+	odom_msg.twist.twist.angular.z = pose.omega
+
+	odom_pub.publish(odom_msg)
+
+-----------note sent to Luc-------
+
+Luc,
+  I think I mis-spoke (well, misunderstood).
+
+ I think the problem is that "pose" is our cwru_base::Pose message type. which is unknown to rostopic. 
+
+HOWEVER, odom_translator.py is defined in the same cwru_base package, and it should understand our cwru_msgs.  It subscribes to this topic, repackages the data, and retransmits it as a message of type nav_msgs/Odometry on topic "odom".
+
+In short, when you start up: rosrun cwru_base crio_receiver
+ALSO start up: rosrun cwru_base odom_translator.py
+Then see if you can echo messages on the "odom" topic.
+
+Did you try launching with cwru_base/start_base_simple.launch?  This should bring up a bunch of nodes that should make "odom" come alive (and you should be able to echo this topic).
+
+-----
+Here are some notes largely to myself, but you can let me know if I have misinterpreted.
+
+We have two key "bridge" nodes:
+
+  twist_receiver.py is a Python program that receives ROS twist commands and relays them on to the cRIO for execution.  I think launching this node would enable Jinx to respond to the /cmd_vel topic and start sending motion commands (speed/spin) to the cRIO.  This is worth testing on its own.  Even a command-line rostopic pub command should get the wheels spinning.  (Though this is dangerous, so please test up on blocks).
+
+ The other bridge node is crio_receiver.cpp.  This one should get sensor data (and cumulative "pose" updates) from the cRIO and republish these on various topics.  One such topic is "pose".  The datatype for this topic is our own definition, cwru_base::Pose.  crio_receiver does include this message type with: #include <cwru_base/Pose.h>
+
+I note, though, that this message type is defined only locally in the cwru_base package.  It seems this message type is not more generally available.  (We could, alternatively, make cwru_base_msgs its own package, and thus make it globally available to other processes--but I suppose we won't have any other packages that want this message, since the "odom" message is better).
+
+Looks like odom_translator.py cleverly looks for parameters such as push_casters to determine if the robot is to be operated with casters forward (like Abby) or behind (like Jinx).
+
+The launch files allow for redefining the base frame (e.g., casters forward or behind) and correct for definitions of positive wheel spin. 
+
+As long as cwru_base compiles O.K. in hydro, I think we can re-use the launch files.
+
+It also looks like much of the detail for variations is handled for us in config files (under cwru_configs).  I see configs for abby, alen, harlie, jinx, roberto and "sim"
+
+
+
+

@@ -1,0 +1,32 @@
+  </link>
+  <link name="utorso">
+    <inertial>
+      <mass value="15.2272"/>
+      <origin rpy="0 -0 0" xyz="0.02 -0.001 0.211"/>
+      <inertia ixx="0.395" ixy="0" ixz="0.083" iyy="0.544742" iyz="-0.003" izz="0.10973"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 -0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://atlas/meshes/utorso.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <collision group="default">
+      <origin rpy="0 -0 0" xyz="0.0446 0 0.1869"/>
+      <geometry>
+        <box size="0.3188 0.24 0.3162"/>
+      </geometry>
+    </collision>
+    <collision group="other">
+      <origin rpy="-0.5236 0 0" xyz="0.024 0.16 0.18"/>
+      <geometry>
+        <cylinder length="0.22375" radius="0.0363"/>
+      </geometry>
+    </collision>
+    <collision group="other">
+      <origin rpy="0.5236 0 0" xyz="0.024 -0.16 0.18"/>
+      <geometry>
+        <cylinder length="0.22375" radius="0.0363"/>
+      </geometry>
+    </collision>
+  </link>

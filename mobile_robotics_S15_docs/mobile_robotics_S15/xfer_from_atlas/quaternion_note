@@ -1,0 +1,18 @@
+From:
+http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/
+
+qx = ax * sin(angle/2)
+qy = ay * sin(angle/2)
+qz = az * sin(angle/2)
+qw = cos(angle/2)
+
+
+so, quaternion in 2-D plane (x,y,theta):
+ax=0, ay=0, az = 1.0
+
+qx = 0;
+qy = 0;
+qz = sin(angle/2)
+qw = cos(angle/2)
+
+therefore, theta = 2*atan2(qz,qw)

@@ -1,0 +1,60 @@
+short-course organization:
+
+*Why ROS?  (code re-use: give and take, architecture, standard sensor/actuator interfaces; 
+  ecapsulation via nodes; standard interfaces to services/action-servers; 
+  hot-swappable; system health monitoring; incrementally upgradable; 
+  existing ROS tools--e.g. rviz, rosbag); min code revision from simu to physical (Gazebo--rqrs good model)
+  
+  demos: wall cutting, valve turning, grab cylinder;
+   PCL--model fitting; rapid prototyping (all DRC)
+   
+*ROS concepts:
+  *demo publisher node
+  *demo subscriber node
+  *demo service/service client nodes
+   (e.g. publish rand values; node sums values and reports when sum > ?; service to reset counter)
+   
+  *run rviz w/ Kinect;
+    rosbag
+    replay rosbag
+    emulate kinect (abby simu)
+    
+ DEMOS:
+   *Atlas video
+   *min publisher/subscriber
+   *min controller/simulator
+   *Kinect interface (find ball can on table)
+   *IM w/ ABB arm (on Abby)
+     --ROS industrial
+     --Kinect emulation
+   *PCL: find table; fit cylinder
+   *PCL+arm: send arm to pose relative to table
+   
+   (new Baxter demos??)
+   (joystick device as controller?)
+   
+   packages: Eigen, KDL, PCL, tf, own IK example? (library)
+   
+  Supervisory control:
+    --pick up a can
+    --move until touch?  (need force sensor; Baxter torques?)
+   
+   holes:
+    *SMACH
+    *action servers
+    *GUI's
+    *SLAM
+    *camera calibration
+    *openCV
+    *KDL
+    *catkin stuff...how to compile w/ SDK's?  (e.g., GUI)
+    
+    TODO:
+      *load latest Ubuntu and ROS Indigo (compatible w/ Baxter)
+      *catkin_simple?
+      *
+    
+   
+   
+  
+

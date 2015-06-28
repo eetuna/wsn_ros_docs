@@ -1,0 +1,133 @@
+http://wiki.ros.org/trajectory_filters/Tutorials/Tutorial%201 intro to trajectory filters:
+
+http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html  trajectory message definition
+
+http://wiki.ros.org/spline_smoother  spline smoother description (unreviewed, unstable)
+
+http://docs.ros.org/fuerte/api/spline_smoother/html/index.html  (spline smoother documentation)
+
+spline_smoother: Converts a position trajectory to a smooth spline trajectory
+
+This package takes in position trajectories (with times), and can fill in velocities and accelerations at the knot points using various schemes, like numerical differentiation, clamped cubic splines, or the Fritsch-Butland monotonic cubic interpolator. 
+
+
+
+http://docs.ros.org/fuerte/api/spline_smoother/html/splines_8h_source.html#l00160
+ 
+line 160: shows how to sample a cubic spline:  sampleCubicSpline(coefficients,time,&position,&velocity,&acceleration)
+  input time, t
+  input coefficients (4 of these in a vector)
+  fills in position(t), velocity(t), acceleration(t)
+  based on polynomial: 
+   x(t) = c0 + t*c1 + t^2*c2 + t^3*c3
+   v(t) = c1 + 2*t*c2+3*t*c3
+   a(t) = 2*c2 + 6*t*c3
+
+note: position(0) = c0
+      velocity(0) = c1
+
+trajectory filter server:  
+The trajectory filters stack allows you to smooth out trajectories using a service call to a trajectory filter server. The service call uses either the FilterJointTrajectory service or the FilterJointTrajectoryWithConstraints service. In this tutorial, we will learn how to setup the trajectory node that provides this service and create a client to call it and get back a response from it. 
+
+so:
+1) create a coarse trajectory with a sequence of knot points (joint angles only); 0-pt is start pose?
+    and allowed_time (not a collection of times?)
+2) send this trajectory to a filter service:
+  ros::service::waitForService("trajectory_filter/filter_trajectory");
+3) get back a collection of segments in result message: res.trajectory.points[].positions[] and
+                                                        res.trajectory.points[].velocities[]
+   (unknown number of intermediate points? no specification of accels?)
+
+CONTRAST:  spline_smoother:
+  library;
+  takes in position trajectories w/ times; fills in vels, accels at knot points;  
+   suitable for cubic interpolation
+
+  handy methods:  
+     http://docs.ros.org/fuerte/api/spline_smoother/html/splines_8h_source.html#l00160
+        getCubicSplineCoefficients()
+        sampleCubicSpline() ...given coef's and t, computes polynomials for x,v,a(t)
+
+reconstruct:
+  *coarse waypoints-> creation of segments
+  *segments described by cubic-spline coeff's
+  *can clock out trajectories by evaluating polynomials of time for successive segments
+
+MESSAGES:
+http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectoryPoint.html
+defines a joint trajectory point, positions[], velocities[], accelerations[], time_from_start (for all joints)
+  (call this a "knot")
+
+http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html
+defines an array of JointTrajectoryPoints
+  (fill in vels and accels w/ zeros if not specifying)
+
+http://wiki.ros.org/pr2_controllers/Tutorials/Moving%20the%20arm%20using%20the%20Joint%20Trajectory%20Action#Overview_and_prerequisites:
+  claims fill in positions and velocities, and action server will fill in cubic interpolation
+
+
+http://wiki.ros.org/trajectory_filters:
+  see: http://wiki.ros.org/spline_smoother
+   smoother option: http://docs.ros.org/fuerte/api/spline_smoother/html/classspline__smoother_1_1FritschButlandSplineSmoother.html
+  Implements the Fritsch-Butland algorithm for monotonic cubic spline interpolation. 
+  Outputs cubic splines with continuous velocities at the waypoints, but not accelerations.
+
+  a library.  useful short fncs inline in splines.h
+
+  instantiate a spline_smoother object and run SplineSmoother::smooth()
+  e.g. FritschButlandSplineSmoother::smooth(trajectory_in, trajectory_out)
+  http://docs.ros.org/fuerte/api/spline_smoother/html/fritsch__butland__spline__smoother_8h_source.html
+
+  keeps first and last velocities intact;
+  fills in intermediate velocities and accels...seems too simple!
+
+  see header: http://docs.ros.org/fuerte/api/spline_smoother/html/namespacespline__smoother.html#ac964796fd06c6c0293d36a433add683e
+
+getCubicSpline_Coefficients()
+Calculates cubic spline coefficients given the start and end way-points.
+
+The input to this function is the start and end way-point, with position, velocity and the duration of the spline segment. (assumes that the spline runs from 0 to time)
+
+Returns 4 coefficients of the quintic polynomial in the "coefficients" vector. The spline can then be sampled as: x = coefficients[0]*t^0 + coefficients[1]*t^1 ... coefficients[3]*t^3
+
+
+http://wiki.ros.org/trajectory_filters:
+  spline_smoother is a library; 
+  fncs to take course traj and fill in details
+
+....follow-up:  check out spline_smoother library;
+   method: SplineSmoother::smooth()
+ http://docs.ros.org/fuerte/api/spline_smoother/html/fritsch__butland__spline__smoother_8h_source.html
+
+  want: feed in coarse trajectory, get back intermediate velocities and accels;
+        use getCubicSpline_Coefficients()
+                Calculates cubic spline coefficients given the start and end way-points.
+          to get coefficients for each segment;
+        use: 
+          sampleCubicSpline() ...given coef's and t, computes polynomials for x,v,a(t)
+         to create stream of pts (where to do this?  in action server?)
+
+1) create coarse traj, knots and times only
+2) perform filter to fill in vels and accels
+3) send entire description to traj generator action client:
+   *breaks up into sgements
+   *gets coef's for each segment
+   *computes q,qdot,qddot at sample points
+   *issues to low-level jnt ctlr at sufficent rate (e.g. 100 Hz?)
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+  

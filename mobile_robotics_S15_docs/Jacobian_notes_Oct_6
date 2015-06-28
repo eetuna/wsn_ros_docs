@@ -1,0 +1,75 @@
+to do:
+*NSF
+*class prep (notes, assignment)
+*get Atlas data (max efforts)
+*observers for Atlas arms... in simu first
+
+*Jacobian for stair climbing
+
+---Jacobian:
+
+shift weight w/ feet stationary;
+ keep hands at fixed location in world frame (i.e., stationary w/rt feet)
+
+issues: 
+given state, and various J(q), compute ideal coupled incremental motion cmds
+unplanned droop-> will need hand corrections
+COULD compute COM solution...or could just lean in direction of correction (try this first)
+
+WANT: shift weight over chosen ankle
+
+DO: displace pelvis to null out COM err w/rt chosen ankle...
+    compute arm motions separately;
+
+how to shift pelvis: 
+  say desire to put wt over left ankle
+  say COM is too far to right (-y) and too far fwd (+x)
+
+say have J_ang and J_trans(q) for rf and lf
+  express these in world coords;
+
+ want pelvis motion of (dx,dy) w/rt world
+ equiv is want (-dx,-dy) of left foot and right foot w/rt world
+ also want dPhi=0_vec of both feet
+
+ choose dz=0 for both feet (if jnt limits allow)
+ thus have b_vec for right leg--> dq_rleg, and b_vec for left leg (identical)--> dq_lleg
+ 6DOF J--> no null space; unique soln;
+  SOLVED
+
+ given expectation for pelvis motion (dx, dy, 0) and dPhi_pelvis=0, how to control arms?
+  desire dp left arm = dp right arm = (-dx, -dy, -dz)_pelvis_cmd;
+  ALSO want dPhi of hand = 0_vec for both arms;
+
+ if back joints are frozen, -> J_larm and J_rarm are 6x6, so get unique soln (if jnts allow)
+
+-------------dealing with joint limits----------
+have pelvis-z DOF
+can allow hands to rotate about railing grasp cylinder
+have 3DOF torso options (though want to keep these small perturbations)
+
+-----------adjusting hands on railings----------
+hand relaxation behavior:  
+  *move to location of computed balance over stance ankle(s)
+  *lift one hand until zero contact; re-approach and grab
+  *do same with other hand
+
+---phases------
+start: balanced on 2 feet on single step w/ hand on railings
+ 1) move hands to prepare for next step
+ 2) shift wt over (e.g.) left ankle, maintaining grasp on railings
+ 3) lift right foot and place on next step
+ 4) raise pelvis to extend left leg(?)
+ 5) shift wt to right ankle
+ 6) lift left foot and place on step
+ 7) shift wt to both feet
+ 8) extend legs (stand)
+  ---repeat from (1)
+
+-- phase 1-------
+
+
+
+
+
+

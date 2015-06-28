@@ -1,0 +1,19 @@
+1) go over rviz stuff
+  *point clouds
+  *interactive markers
+  *displaying axes
+  *COM marker
+  
+2) grasp-frame publisher...describe how this works
+3) tf transformer...describe how this works
+4) Jacobians with torso motion:
+5) go over action-server/action-client stuff
+
+6) use of Null space (6x9 Jacobian)...need to pin pelvis, not utorso
+
+
+
+
+VRC_CHEATS_ENABLED=1 roslaunch roslaunch drcsim_gazebo drc_practice_task_7.launch
+
+whole-body inverse kinematics:

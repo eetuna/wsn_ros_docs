@@ -1,0 +1,24 @@
+PS1:
+
+1) get the repository:
+see notes at:  https://help.github.com/articles/fork-a-repo/
+fork the repository at: https://github.com/cwru-robotics/cwru_376_student
+ (see the README file there)
+
+"clone" this repository into your ros_workspace directory
+(may need to create this directory and edit .bashrc file for ROS setups)
+
+
+2) run the simple 2-dimensional robot simulator, stdr:
+  roslaunch cwru_376_launchers stdr_glennan_2.launch
+ along with the exampel velocity commander:
+  rosrun example_robot_commander robot_commander 
+
+3) Edit the file ".../example_robot_commander/src/example_robot_commander.cpp"
+
+Make the robot depart from the elevator, turn right down the hallway, and turn right towards the
+vending machines.
+
+Make a movie of your result (using Kazaam)
+
+upload your edited cpp program and your movie to Blackboard.

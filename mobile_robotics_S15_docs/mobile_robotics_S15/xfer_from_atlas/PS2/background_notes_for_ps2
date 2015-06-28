@@ -1,0 +1,66 @@
+how to do pathlength-based velocity planning?
+
+*for current segment, look at segDistDone vs segLength, and compute (ideal) scheduled velocity
+   v_sched(distToGo)
+
+*look at current robot speed, v (from some topic publishing robot state)
+
+*NOTE:
+  use odometry message.  (Later, use output of AMCL...whatever that is)
+
+note on amcl: takes in scan msg, map (nav_msgs/OccupancyGrid) and publishes: 
+amcl_pose (geometry_msgs/PoseWithCovarianceStamped) 
+
+ALSO publishes: a tf message,
+ Publishes the transform from odom (which can be remapped via the ~odom_frame_id parameter) to map. 
+
+so...to get "pose" for navigation, do:
+  look up odom
+  use tf to get map pose
+   (should be ~same as amcl_pose, but updated faster/smoother);
+   
+   1) get x and y from odom
+   2) get Euc dist from x_start,y_start (of current segment); call this segDone
+   3) compute dist to go = segLength-segDone
+   4) eval v_sched from this dist_to_go:
+         % trapezoid: 
+T_accel = v_max/a_max %...assumes start from rest
+T_decel = T_accel; %(for same decel as accel); assumes brake to full halt
+dist_accel= 0.5*a_max*(T_accel)^2 %distance rqd to ramp up to full speed
+dist_decel = dist_accel; %same as ramp-up distance
+dist_const_v = segLength - dist_accel -dist_decel %if this is <0, never get to full spd
+T_const_v = dist_const_v/v_max %will be <0 if don't get to full speed
+T_segment_tot = T_accel + T_decel + T_const_v
+
+set v as:
+ %now, decide if should accel, decel or keep vel
+    %use segDistDone to decide what vel should be
+    if (segDistDone<dist_accel)  %ramp-up phase
+        %in ramp-up phase; what is appropriate velocity for this phase?
+        v_scheduled = sqrt(2*segDistDone*a_max);
+        if v_scheduled < a_max*dt;
+            v_scheduled = a_max*dt;%add some extra, to avoid sticking in place
+        end 
+    elseif (segDistDone<dist_accel+dist_const_v) %const vel phase
+        v_scheduled = v_max;
+    else %ramp-down phase
+        v_scheduled = sqrt(2*(segLength-segDistDone)*a_max);   
+    end
+    
+     %how does the most recent velocity command compare to the scheduled vel?
+    if v_cmd < v_scheduled
+        v_test=v_cmd+a_max*dt;
+        v_compare=[v_test,v_scheduled];
+        v_cmd = min(v_compare); %choose lesser of two options
+    elseif v_cmd > v_scheduled
+        v_test = v_cmd-1.2*a_max*dt;
+        v_compare=[v_test,v_scheduled];
+        v_cmd = max(v_compare); %choose larger of two options
+    else
+        v_cmd=v_scheduled; %this is already the case, if here
+    end
+    state(4)=v_cmd;  %update the new speed command
+end
+
+
+

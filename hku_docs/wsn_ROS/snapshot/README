@@ -1,0 +1,56 @@
+A simple OpenCV example (and handy utility) that saves snapshots of an image topic to a bitmap.
+
+compile with: rosmake snapshot
+
+To use, need a camera image topic being published.
+E.g., start up the atlas simulator (such as with: roslaunch atlas_utils atlas_drc_vehicle_fire_hose.launch)
+
+
+
+in a terminal, change to the directory where you want to store your snapshots, then start the snapshot program.
+To use the default topic of: //multisense_sl/camera/right/image_rect_color, run with:
+
+  rosrun snapshot snapshot
+
+To specify an alternative camera topic, include a command-line argument. 
+E.g., to get rectified color images from the left eye, do: 
+
+  rosrun snapshot snapshot in:=//multisense_sl/camera/left/image_rect_color
+
+"snapshot" will then subscribe to the image topic (default or command-line) and 
+prompt the user to enter "1" to take and save a snapshot, or enter "0" to quit the program.
+
+Each time "1" is entered, the received image will be saved to disk as a *.bmp file in the current directory
+(from which "snapshot" was run).
+
+Each saved picture gets saved as: snapshotN.bmp
+ where "N" is incremented each time, starting from snapshot1.bmp.
+
+If you already have images in the current directory with similar names (e.g. snapshot1.bmp), these will get overwritten.
+
+You can also view the saved images by subscribing to the topic "snapshot_out".  To do so, in another terminal, run:
+  rosrun image_view image_view image:=/snapshot_out
+
+The saved images can be examined with another program.  E.g., you can:
+start "gimp" (if installed, will be under Applications->Graphics->GIMP Image Editor)
+In the GIMP main window, do File->Open... and navigate to an image of interest and open it.
+In the GIMP Toolbox panel, you can select the Color Picker Tool (looks like an eye dropper),
+In the Color Picker panel,
+  click "sample average", 
+  increase the radius to some desired value for sampling
+  click "Pick only"
+  click "Use info window"
+
+In the loaded/displayed image, your mouse will look like an eye dropper.
+Click on some region, and the Color Picker Information window will show the color information
+ (e.g., clicking on the sky will yield something like Red: 144, Green: 161, Blue: 212)
+
+This color information can be used to design a program to recognize regions of specific color ranges
+
+
+
+
+ 
+
+
+

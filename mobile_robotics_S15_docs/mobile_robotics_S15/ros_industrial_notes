@@ -1,0 +1,157 @@
+ros industrial inheritance:
+
+E.g., in industrial_core/industrial_robot_client/include/insutrial_robot_client/joint_trajectory_downloader.h
+
+  have the line:
+  
+  class JointTrajectoryDownloader : public JointTrajectoryInterface
+  
+  This means, a new (derived) class is defined, called "JointTrajectoryDownloader"
+  
+  It has all the same functionality as the base class "JointTrajectoryInterface", 
+  and it additionally has a new member method:
+  
+  public:
+
+Try to find the action server, CmdJointTrajectory
+  
+  Note that this header includes:
+  
+#include "industrial_robot_client/joint_trajectory_interface.h"
+**********
+The above header file is much longer, and it prototypes the base class:
+class JointTrajectoryInterface
+
+looks like constructor attempts to make IP connection to robot (see this header, init() fnc)
+
+also defines fnc: virtual void run() { ros::spin(); }
+  note: virtual fnc allows for derived class to override this definition in the base class
+  
+class prototype has a bunch of member data and fncs;
+includes 2 subscribers, 2 service servers, 10 simple virtual fncs (including send_to_robot(...)),
+  multiple callback fncs 
+    TcpClient default_tcp_connection_;
+    
+ has this subscriber callback:  
+  /**
+   * \brief Callback function registered to ROS topic-subscribe.
+   *   Transform message into SimpleMessage objects and send commands to robot.
+   *
+   * \param msg JointTrajectory message from ROS trajectory-planner
+   */
+  virtual void jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg);
+  
+ALSO includes (private, NOt virtual) callback fnc: 
+  /**
+   * \brief Callback function registered to ROS CmdJointTrajectory service
+   *   Duplicates message-topic functionality, but in service form.
+   *
+   * \param req CmdJointTrajectory request from service call
+   * \param res CmdJointTrajectory response to service call
+   * \return true always.  Look at res.code.val to see if call actually succeeded
+   */
+  bool jointTrajectoryCB(industrial_msgs::CmdJointTrajectory::Request &req,
+                         industrial_msgs::CmdJointTrajectory::Response &res); 
+  
+  
+  
+  
+*******
+NOTE: the node from source code "generic_joint_downloader_node.cpp" does:
+*creates a ROS node called "motion_interface"
+*instantiates an object of type "JointTrajectoryDownloader"
+*runs the (virtual) function "init()"
+*runs the (virtual) function "run()"  (which is simply a ros::spin() )
+
+
+Try to find the action server, CmdJointTrajectory
+  (uses callback jointTrajectoryCB and action messages industrial_msgs::CmdJointTrajectory...)
+  
+  
+  Ed's code: need to find server by the name of:  move_irb_120
+  
+  look in:  swri-ros-pkg/abb/abb_common/urdf:  has what looks like a nice IRB120 URDF
+    (needs to refer to abb_common/meshes for stl's)
+    ALSO: swri-ros-pkg/abb/abb_common/rapid contains RAPID programs to receive and execute trajectories
+    
+   ...irb_120_arm_navigation/launch/motion_test.launch contains:
+     <node name='joint_publisher' pkg='irc5' type='sim_joint_stream.py' />
+    <node name='joint_downloader' pkg='irc5' type='motion_download_interface' args="192.168.0.50"/>
+    
+    BUT swri-ros-pkg looks old; contains stack.xml stuff
+    
+ -------------HOW TO TEST/SIMULATE-----------------
+ want to use action server interface;
+ I think this works this way:
+ 
+ *ABB runs a RAPID pgm that listens on a socket connection;
+   accepts trajectories; executes them
+   
+ *EMULATOR: write socket code that connects and retransmits trajectories to simulator?
+   Do I need joint controllers on ABB Gazebo model?  Or can I simply send robot state commands to Gazebo?
+   
+ *ALT:  don't try to do socket stuff (skip/rewrite move_irb_120 action server...motion_download_interface?)
+    Spoof:  action server: CmdJointTrajectory w/ alternative 
+    or override: JointTrajectoryInterface.send_to_robot()
+      (see source:  joint_trajectory_downloader.cpp for send_to_robot() method implementation)
+    
+    FIND:  source of class JointTrajectoryAction
+    found class definition, *.h, in:  
+       industrial_core/industrial_robot_client/include/industrial_robot_client/joint_trajectory_action.h
+       defines:
+         typedef actionlib::ActionServer<control_msgs::FollowJointTrajectoryAction> JointTractoryActionServer;
+         
+         
+from ROS-I web:
+you will need your robot drivers to support the control_msgs/FollowJointTrajectoryAction and publish the robot joint state 
+
+from: http://wiki.ros.org/industrial_robot_client/generic_implementation
+download interface:
+roslaunch industrial_robot_client robot_interface_download.launch robot_ip:=<value>
+
+From same link: motion_*_interface:
+  subscribes to joint_path_command (trajectory_msgs/JointTrajectory)
+
+    Joint trajectory command messages. 
+    
+ALSO:  action server version:
+
+ joint_trajectory_action:
+ subscribes to: joint_trajectory_action/goal (control_msgs/FollowJointTrajectoryActionGoal)
+    The goal describes the trajectory for the robot to follow. 
+    (and response with ../result)
+    
+ launches:
+   <!-- joint_trajectory_action: provides actionlib interface for high-level robot control -->
+  <node pkg="industrial_robot_client" type="joint_trajectory_action" name="joint_trajectory_action"/>
+  
+  joint_trajectory_action is compiled as follows (from CMakeLists.txt):
+  
+  add_executable(joint_trajectory_action 
+  src/generic_joint_trajectory_action_node.cpp
+  src/joint_trajectory_action.cpp)
+target_link_libraries(joint_trajectory_action 
+  industrial_robot_client ${catkin_LIBRARIES})
+add_dependencies(joint_trajectory_action industrial_robot_client_gencpp)
+
+
+-------http://wiki.ros.org/industrial_robot_client/design
+---------------STRATEGY--------------------
+
+for simulation purposes, create a node called "motion_download_interface"  
+
+It should subscribe to the topic:
+"joint_path_command", receiving messages of type: “trajectory_msgs::JointTrajectory” 
+
+(draw from https://github.com/ros-industrial/industrial_core/blob/indigo-devel/industrial_robot_client/src/joint_trajectory_interface.cpp).
+
+For simu purposes, it should transmit these as joint commands to ABBY's robot model in Gazebo.
+
+
+
+  
+     
+    
+    
+    
+  

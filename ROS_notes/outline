@@ -1,0 +1,105 @@
+ROS class outline: (Intro to ROS--update for rqt instead of rx...)
+0) ROS preamble:
+ *installing ROS
+ *ros workspace
+ *catkin workspace
+ *catkin_make
+ *catkin_simple
+ *creating a ros package
+ *including other ROS packages in a ROS package
+ *I/O: ROS_INFO, ROS_WARN...
+ 
+1) publish/subscribe
+  *publisher (w/ rostopic echo)
+  *subscriber (w/ and w/o sleep)
+2) minimal simulator/minimal controller
+
+3) rqt_console, rosbag, rostopic, rosnode, ...
+
+
+.....
+ROS messages:
+ rosmsg show
+ message primitives; messages within messages
+ catkin_make creates corresponding header files
+ including header files in source code (ref dependency in catkin_make and include header file)
+how to make your own message type:
+*edit new msg file
+*changes to catkin-make
+*including the header in source code
+
+ROS services:
+* (start w/ existing cwru_srv?)
+* make a trigger w/ client/server
+* how to make a service message 
+    -srv file; changes to catkin-make, include file in src code, include pkg dependency
+
+Parameter server:
+ *e.g., robot model, gains, modes
+ *robot model used by rviz, KDL, Gazebo (?)
+ 
+Using a ROS library:
+ *list dependency in makefile, include header in src code
+ *e.g., Eigen...
+ 
+ 
+ ....need motivating examples:
+ try ABB arm in Gazebo?
+ try Kinect? (w/ rviz?)
+ 
+ ----------goal:
+ *show sensory-driven motion control;
+   -move arm w/ interactive marker
+   -select patch of points in rviz;
+   -arm moves to selected location--or relative to selected location
+   
+ 
+ ----intro: 
+   show Atlas wall cutting video; explain:
+     *human selects location to place template
+     *template auto-aligned w/ point-cloud surface
+     *pre-computed best approach--> footstep plan, start to opt wall-cutting pose
+     *at cutting pose, select wall points, compute cuttability, display template
+     *w/rt template, user draws polyline to imply desired cut contour
+     *induces solver for indexed IK solutions for path;
+     *induces solver for min-cost IK trajectory
+     *generates trajectory(t)
+     *sends to action server to execute motion
+     (can use on-line J_inv computations for legs; 
+      can use on-line force feedback for compliance)
+      
+      uses:
+        feedback at 1kHz, publish/subscribe (compliant motion)
+        trajectory cmd streaming (publish)
+        IK: library; (uses Eigen)
+        motion planning: library 
+        trajectory execution (action server)
+        instantiate action server for motion planning 
+        SMACH for sequencing action servers
+        
+  --why ROS?  design w/ ROS:
+    *want to show how to incorporate an existing package
+      --package as library (e.g. Eigen, IK solver, tf, openCV, PCL, SLAM, AMCL)
+    *interact w/ simulator (Gazebo) vs real robot (need realistic model--URDF)
+    *interact w/ rviz (Gazebo or robot)
+      --display data (e.g. vision, point-clouds, visualization of robot pose)
+        allows 3-D perception/alt viewpoints
+      --HMI: move markers, display templates, select points, init model poses, 
+        results are transmitted as messages-> decoupling
+        
+    
+    influence on architecture:
+     *include a library (not really different)
+     *interact w/ robot (standardize I/O: publish/subscribe; streaming trajectories)
+     *existing and forthcoming sensors, actuators, robots: w/ existing ROS interfaces 
+       (Baxter, Kuka, Motoman, ~ABB, Rockwell?, ...ROS-industrial, 
+        USB cameras, firewire cameras, Kinect, Sick LIDAR, Hokuyo LIDAR, joysticks, ...)
+        
+  --how to make a ROS device driver
+    --ABB example in RAPID;
+    --IMU example on beaglebone black?
+    --joystick example?
+        
+        
+
+

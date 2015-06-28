@@ -1,0 +1,14 @@
+package to test/learn "Eigen"
+
+note #include's in test_eigen.cpp
+dependencies in manifest
+statements in CMakeLists.txt
+
+example code demonstrates matrix/vector math, and how to solve systems of equations
+(two methods demonstrated).
+
+Can do M*x, x.norm(), x.dot(y), x.cross(y)
+
+this test worked--successfully solved 6x6 matrix equations
+
+use this for crawling Jacobian

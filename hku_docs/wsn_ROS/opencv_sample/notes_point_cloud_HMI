@@ -1,0 +1,22 @@
+goals:
+
+point-cloud connects to opencv
+
+mouse selects points in 2D
+
+implies points in 3D 
+
+interpret in some (utorso? pelvis?) frame
+
+move hand to target point (along straight line?)
+
+sense contact and stop??
+
+have arm move along line of sight?
+
+
+Jacobian w/rt sensor frame?
+
+w/ mouse clicks, found point-cloud coords say: z is depth (into scene), +x is to the right, +y is down
+
+Point clouds are generated in the optical frame of the left imager (X Right, Y Down, Z out). 

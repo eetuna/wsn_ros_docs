@@ -1,0 +1,62 @@
+new process, as of Nov 24, 2013
+
+1) start up Atlas with:
+drill task:
+VRC_CHEATS_ENABLED=1 roslaunch hku_worlds task_6.launch  (new launch file; includes hand frames; enables pelvis pinning)
+
+valve task:
+VRC_CHEATS_ENABLED=1 roslaunch hku_worlds task_7.launch  (new launch file; includes hand frames; enables pelvis pinning)
+
+2) move Atlas in Gazebo view
+
+3) pin the pelvis:
+rostopic pub --once /atlas/mode std_msgs/String '{data: "pinned_with_gravity"}'
+
+4) rosrun rviz rviz
+   (should find grasp frames on hands--show these)
+    set fixed frame to "pelvis"
+    add->axes->right_grasp_frame
+    add->PointCloud2->/multisense_sl/camera/points2 (optional)
+    add->LaserScan->/multisense_sl/laser/scan
+      increase decay time; try ColorTransformer: AxisColor with Axis = X  
+      turn off autocompute value; try min value = 0.8, max value = 1 (tune these to your liking)
+
+5) start spindle turning:
+   rostopic pub --once /multisense_sl/set_spindle_speed std_msgs/Float64 '{data: 3.0}'
+
+6) rosrun LLJSV5... (answer Q's)
+  rosrun lowLevelJointServoV3 lowLevelJointServoV3 
+
+7) rosrun behavior server:
+   rosrun behavior_server behavior_server
+
+8) prep pose: cd to /ros_workspace/elec7078/rosbuild/elec7078_newman/traj_files (or any alternative you choose)
+   rosrun play_file play_file prep_valve_grab.traj  (or any trajectory file of your choice)
+     (robot will move arms to a preparatory pose)
+
+9) start the jacobian action server:
+  rosrun jacobian_move_behavior rhand_jacobian_move_behavior
+
+10) start the interactive marker node:
+   rosrun grasping_elec7078 grasp_goal
+
+11) in rviz, add->interactiveMarkers->grasping/im/update
+      the interactive marker should appear in front of the pelvis.  It is much smaller now, so you may need to look closely for it.
+
+12) test the interactive marker;  observer output from the terminal of step (10) while moving the marker in rviz.  
+    You should see the coordinates change.
+
+13) Start the GUI panel;  you MAY need to tell the system to search for the GUI description by running:
+       rqt --force-discover  (but you should only need to do this once, if at all), then:
+     rosrun grasping_elec7078 grasping.py
+
+The GUI panel has features that are grayed out.  You will only need the "Execute" button.
+  When you press this button, the most recent marker pose will be sent to the action server as a goal request.
+
+Please note that, at present, what the action server does with this information is VERY WRONG.  You need to add
+code for a more intelligent response.
+
+The current Jacobian publisher does not publish Jacobians with respect to the new grasp frames on the hands, so
+you would want to use a version of "vlad's fancy solver" and refer to the new frame names (e.g. right_grasp_frame).
+
+

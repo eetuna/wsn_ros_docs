@@ -1,0 +1,89 @@
+class list:  
+
+prep excel printout for assignment 1:
+make sure everyone has forked team_hku and shared with me
+
+have:
+Alex, Nian Xing, Eric, Yi Chen (Ken), Guangy Xu (Sue), Levi Ma, Sampson Tan, Ernest Cheung
+missing: billbliss, Patrick, Du, Sharon, Frankie, (Rita, Helen)
+
+go around and see hmwk 1 demos; make notes
+
+
+-----Last time, did: Intro to ROS-----
+  roscreate-pkg example_pkg roscpp std_msgs  (do this in ros_workspace, but not my fork)
+  manifest.xml
+  CMakeLists.txt
+  code in "src" directory
+  example minimal publisher
+  rosmake minimal_nodes (in new example package?)
+  roscore
+  rosrun pkg node
+  rostopic xxx
+  rxgraph
+  explain ROS_INFO() (in source code)
+  rosrun both nodes (separately)
+  rxgraph
+  roslaunch: (refer to cheatsheet)
+  rxconsole
+  rosbag (record, then play w/ subscriber only; watch output in rxconsole)
+  ----------------simulator/controller----------
+  simulator: subscriber AND publisher
+  rxplot
+  rostopic pub for force_cmd
+  minimal_controller:
+   rostopic pub vel_cmd
+   rxplot
+ ---------------------
+ an edit to README.md (on my fork)
+ use git gui (commit, then push)
+ demo that change shows up on bitbucket
+ ----assignment: write trajectory commander for minimal simulator/controller-------
+ go over assignment on-line
+........
+
+-----OUTLINE FOR SEPT 17-----------
+*Modelling the Atlas robot document (explain URDF, links, joints, actuators, frames)
+*atlas joints PDF
+*atlas URDF display PDF
+*open a URDF file
+*ROS and DRC v2.pdf (14 pgs)
+  gazebo server/client
+  what gets simulated
+  roslaunch atlas_utils ...
+  simulated sensors (e.g. cameras)
+  rosrun rviz rviz...and rviz settings
+  rosnode list
+  rostopic list
+  rostopic hz atlas/atlas_state
+  rosmsg show atlas_msgs/AtlasState
+  
+simple_joint_interface:  
+  run pgm...demo; e.g, tilt head and show new view;  
+  explain code and "go to current pose"
+  demo: move arm and fall over
+
+*go over reference pose and reference frames (pelvis frame, etc)
+
+*launch w/ VRC_CHEATS_ENABLED and do rostopic pub ...
+
+* go through joints/motions; w/ pelvis pinned
+
+* need for better interface: streaming;
+
+----defining custom messages---
+see hku_msgs, low-level joint controller
+more on messages; can make own messages; defer this
+
+go over low_level_servo_control.cpp
+go over sin_test_generator.cpp
+
+describe how to rosbag
+describe how to analyze
+
+go over assignment
+
+
+
+
+

@@ -1,0 +1,120 @@
+abby notes:
+
+did this:
+
+in one window:
+ roscore
+
+in another window:
+ rosrun gazebo_ros gazebo
+
+in a third window, from directory: /ros_workspace/cwru_abby/abby_description/urdf
+ rosrun gazebo_ros spawn_model -file ./abby_no_arm.urdf -urdf  -z 0.1 -model abby
+
+abby model (no arm) shows up in Gazebo!  drops slightly; rolls around slightly/randomly
+
+rostopic echo gazebo/link_states outputs pose and twist of:
+name: ['ground_plane::link', 'abby::frame1', 'abby::l_caster1', 'abby::l_caster_wheel1', 'abby::l_drive_wheel1', 'abby::r_caster1', 'abby::r_caster_wheel1', 'abby::r_drive wheel1']
+
+also, rostopic echo gazebo/model_states yields:
+
+---
+name: ['ground_plane', 'abby']
+pose: 
+  - 
+    position: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    orientation: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      w: 1.0
+  - 
+    position: 
+      x: 0.0148360650992
+      y: -0.597309434941
+      z: 0.106946112084
+    orientation: 
+      x: 0.00900040357241
+      y: 0.000385250909211
+      z: 0.0435812952761
+      w: 0.999009266733
+twist: 
+  - 
+    linear: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+    angular: 
+      x: 0.0
+      y: 0.0
+      z: 0.0
+  - 
+    linear: 
+      x: 0.00611238493874
+      y: -8.08156297506e-05
+      z: -0.00471550256066
+    angular: 
+      x: 0.00546663393708
+      y: -0.0182962468467
+      z: -0.00278287295797
+---
+........................
+
+also, have topic: gazebo/set_link_state; looks like this accepts message specifying link name, ref frame, pose, twist
+
+similarly for gazebo/set_model_state
+uses message: gazebo_msgs/ModelState
+
+maybe create a scam simulator node that executes velocity cmds?  (and updates model pose in world?)
+
+
+created package (within hku class repository, under examples): abby_simu
+rosrun abby_simu abby_simu
+
+This will integrate right and left wheel angular velocities, update pose of robot relative to world
+(based on wheel kinematics), and publishes to topic: "/gazebo/set_model_state"
+
+This worked for a while (incrementally), then got crashes.  Gazebo no longer accepts model:
+
+rosrun gazebo_ros spawn_model -file ./abby_no_arm.urdf -urdf  -z 0.1 -model abby
+
+stalls w/ message:   Waiting for service /gazebo/spawn_urdf_model
+
+when successful, says:
+spawn_model -file ./abby_no_arm.urdf -urdf  -z 0.1 -model abby
+spawn_model script started
+[INFO] [WallTime: 1420727919.099791] [0.000000] Loading model xml from file
+[INFO] [WallTime: 1420727919.112093] [56.151000] Waiting for service /gazebo/spawn_urdf_model
+[INFO] [WallTime: 1420727919.115340] [56.154000] Calling service /gazebo/spawn_urdf_model
+[INFO] [WallTime: 1420727921.015693] [57.804000] Spawn status: SpawnModel: Successfully spawned model
+
+
+
+note--gazebo seems to remember old models from prior launch. select model and delete in Gazebo helps.
+
+tried rebooting Linux; then gazebo listed state topics again, and model was loadable.
+-------
+
+coord sys:  w/ abby_simu doing pure shift of +x, results in Abby translating to Abby's left.
+set theta_z = 0.7 and ds= 0.0001--> Abby still shifts to her left.
+cmd pure shift in y direction: Abby translates along orthogonal world-grid direction w/ +y corresponding to z-axis "up"
+
+try redefining translation this way: +x to Abby's left, +y is reverse;
+  then dy_Abby = -ds; dx_Abby = 0
+  rotate to Abby2 frame, w/ x fwd and y to left:
+   -> Rotz(pi/2)...
+   dy_Abby2 = 0; dx_Abby2 = 
+   take current computation and use dpose_y = -dx;
+                                    dpose_x = dy
+   seemed to work; tuned KTRACK approx to 0.6; need to refine, and get wheel radius as well
+
+
+
+
+
+
+
+

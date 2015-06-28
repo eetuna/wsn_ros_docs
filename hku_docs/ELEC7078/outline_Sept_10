@@ -1,0 +1,73 @@
+class list:  (name those who have sent me bitbucket login names)
+ final call! (today!)
+
+  subject: elec7078
+  
+  my name is: xxx
+  I prefer to be called: xxx
+  my hku e-mail is: xxx
+  my bitbucket login name is: xxx
+
+bitbucket: login;
+  find your fork (create one if haven't already)
+  clone it to the directory ros_workspace
+
+  open up course notes (intro to ROS, v2, in "documents" directory)
+
+roscreate-pkg example_pkg roscpp std_msgs  (do this in ros_workspace, but not my fork)
+
+manifest.xml
+CMakeLists.txt
+code in "src" directory
+
+go through example minimal publisher
+
+rosmake minimal_nodes (in new example package?)
+
+roscore
+
+rosrun pkg node
+
+rostopic xxx
+
+rxgraph
+
+----minimal subscriber:
+ explain ROS_INFO() (in source code)
+
+rosrun both nodes (separately)
+
+do rxgraph
+
+roslaunch: (refer to cheatsheet)
+
+rxconsole
+
+rosbag (record, then play w/ subscriber only; watch output in rxconsole)
+
+----------------simulator/controller----------
+simulator: subscriber AND publisher
+
+rxplot
+
+rostopic pub for force_cmd
+
+minimal_controller:
+rostopic pub vel_cmd
+
+rxplot
+
+---------------------
+do an edit to README.md (on my fork)
+use git gui (commit, then push)
+demo that change shows up on bitbucket
+
+----assignment: write trajectory commander for minimal simulator/controller-------
+go over assignment on-line
+
+........
+
+
+
+
+

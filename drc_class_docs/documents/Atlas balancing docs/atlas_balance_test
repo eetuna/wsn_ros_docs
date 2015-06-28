@@ -1,0 +1,141 @@
+Atlas balance test:
+
+1) pre-position Atlas in nominal balance pose
+   lower to floor
+   try to get balanced (manually)
+
+2) run: rosrun balance_behavior q15_right_ankle_torque_balancer
+  (will gather data for 2 sec, then suspend waiting for OK from user)
+
+some RQT data to watch:
+rqt_plot /atlas/atlas_state/r_foot/torque/x /SmcData/rfoot_mx /SmcData/g1_est /SmcData/trq_net
+
+rqt_plot lljc/last_cmd/jntAngles[15] atlas/atlas_state/position[15] atlas_command/position[15]
+
+other topics to plot:
+SmcData/dt  
+SmcData/omega_x 
+
+SmcData/s, SmcData/sdot_nom,  SmcData/sdot_est
+
+SmcData/unom, SmcData/u, SmcData/q15ddot
+
+3) start bagging:  rosbag record -O SmcData atlas/atlas_state SmcData
+
+4) enter "1" in response to prompt from balancer node will attempt to balance for g_Necs (currently set to 20).
+
+5) adjust parameters (below) in q15_right_ankle_torque_balancer.cpp and retry:
+
+
+const double g_right_ankle_roll_qmax = 0.3; // no point using more than this; 0.4; // rough approx for max angle roll angle, +/-
+const double g_right_ankle_roll_qdotmax = 8.0; //TEST8.0; // Atlas peak qdot 1.0; // drcsim limit on qdot 
+const double g_right_ankle_roll_qddotmax = 20.0; // seems to be adequate, in Octave simu; Atlas is much faster
+
+// very rough Atlas estimate of torsional stiffness of foot w/rt floor;  
+const double K_theta_ankle_roll= 670.0; 
+
+// TUNABLE SMC CONTROLLER PARAMETERS:
+const double g_Ks = 200; // sliding-mode s boundary layer half-width
+const double g_uhat = 20; // q15ddot to exert to drive s->0
+const double g_lambda = 3; //1/tau for sliding surface; need this fast enough...
+
+const int g_Nsecs = 20;  //duration of test, in seconds
+
+-----------------ANALYSIS------------
+dt:  mean = 1.33ms;  usually 1msec, frequently 2msec, worst case 6msec
+  (sometimes slightly < 1msec)
+
+pelvis angle and omega_x:
+  high and low freq oscillation:
+  low-freq = about 3 cycles over about 12sec: 0.25Hz
+  high-freq: 17 cycles over about 2.5 sec, about 6.8Hz
+  integrated omega_x is pretty good--slow drift away from pelvis angle;
+    drift was 0.001 rad over 20 sec;
+
+hvec shows 6.8 Hz oscillation, but not (not visible) low-freq (0.25Hz) oscillation
+ integrated net trq has serious offset: falls as 14N-m offset error in net trq
+
+integrated mxdot est: mag of hi-frq oscillations is too large (by 2x) 
+
+q15 command following:  attenuated and lagging; 75% amplitude, delayed 50msec (from 150msec period)
+  120-deg phase lag (slightly less; 100?)
+
+same deal with velocity following; commands look smooth;  oscillation size +/- 0.6 rad/sec
+
+s oscillates at about 7 Hz, amplitude about 800.  Did not see 1/4 Hz oscillation on s(t)
+sdot_est is trapezoidal, capped at +/- 13,400;  
+It correctly has sign opposite that of s(t) 
+sdot nom oscillates w/ amplitude about 3,000 (averaging zero)
+
+q15ddot saturates +/-20 at ~7Hz trapezoid, rising over 20ms (about 20 samples)
+u oscillates about +/-30 (gets saturated a qddot_max later)
+ looks like it correctly includes unom (from sdot_nom)
+
+s(t) biggest contributions are from h(t) and trq_net_dot(t), which are comparable in magnitude
+  and nearly aligned.  Expected these to be out of phase (???)
+
+mx is NOT well modelled; dq_tilt is not a good fit to mx
+
+found oscillation in two joints:  9 and 8 (both ankle joints)
+
+-------------
+~5Hz oscillation in q15 is present prior to start of SMC; produces trq variation of mx
+  approx +/- 0.5N-m
+
+w/ SMC, looks closer to 7Hz, amplitude 1.5 or more
+DO see 7Hz oscillation in pelvis angle, (small oscillation, though;
+  about 1mrad amplitude)
+
+Fig 3 and Fig4 shows ~perfect agreement btween Dvec and integrated h, including amplitude
+0.2 Kg-m^2*rad; 
+
+Net trq: see +/-4Nm oscillation, about 6.5Hz
+
+------drcsim--------
+tried disturbance F; 60N for 0.5 sec is enough to cause trouble in static pose
+In drcsim, after disturbance, integral of net_trq looks consistent w/ h(t)
+
+DO see h(t) fall for about 0.5 sec (which should happen), though this is not reflected in
+  trq_est.  Creates offset between integral of trq and h(t), but other wise follows pretty well 
+from 4sec to 5sec, as robot is falling.  (Dist at ~3.1 sec, in example)
+
+mx saturates at -80 N-m; dq-tilt*(-2000) almost matches slope of mx at start of fall, 
+ BUT severely time delayed: 200ms
+
+----------------Atlas-----------------
+SURPRISE: h(t) is very noisy; presumably, this is real.
+ (e.g. due to vibrations).
+
+hmm...try to make h observer??
+
+ALSO need better model for mx_ddot
+
+mx: fits pretty well to: mx = mx_offset -1300*q15
+
+SO: noise (vibrations?) in omega_x are interfering with h and with trq_dot
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+

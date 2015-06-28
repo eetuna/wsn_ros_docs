@@ -1,0 +1,57 @@
+notes on one_shot_move package:
+
+Useful utility for moving the robot to a specified pose.  Skips use of the joint sequencer.
+Manually edit "one_shot_move.cpp" to specify the desired joint angles.
+May specify all 28 body angles, or may specify only a subset.
+The unspecified angles will be commanded to remain at the current pose of the robot.
+
+To use this package, 
+
+*edit file one_shot_move.cpp
+*specify the goal joint angles of those joints to be moved, e.g.:
+  move the neck to 1.0rad by editing the following line in one_shot_move.cpp
+
+  // EDIT HERE XXXXXXX  specified desired new angles (only those different from current pose)
+  goalAngles[neck_ay] = 1.0;  //tilt the head via the neck
+
+  // DONE WITH EDITS XXXX
+
+*do: 
+  rosmake one_shot_move
+
+*if robot simulator is not already running, do:
+  roslaunch atlas_utils atlas_sandia_hands.launch, 
+OR:
+  roslaunch atlas_utils atlas_drc_vehicle_fire_hose.launch
+
+
+*do: 
+  rosrun one_shot_move one_shot_move
+
+
+EXAMPLE:  moving the neck to 1.0 (bending down) is useful for:
+
+  roslaunch atlas_utils atlas_drc_vehicle_fire_hose.launch
+
+and in a separate window:
+  rostopic pub --once /drc_world/robot_enter_car geometry_msgs/Pose '{}'
+
+this will place Atlas in the vehicle.
+Bending the neck downwards then has a useful view of the steering wheel and shifter
+
+to visualize, do:
+
+  rosrun rviz rviz
+
+*in .Global Options: set fixed frame to /pelvis
+*click "add" button and choose: rviz->PointCloud2 (and click "OK")
+*in "Displays" panel, under PointCloud2" item, click to the right of "Topic" and
+   choose: multisense_sl->camera->points2 (click "OK")
+*still in "Displays", still under "PointCloud2", click to right of Color Transformer, 
+   and choose: RGB8
+
+Will now be able to see the steering wheel, gear shifter, dash, tops of knees, pedal, ...
+
+
+
+

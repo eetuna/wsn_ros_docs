@@ -1,0 +1,79 @@
+1) demo arm:
+  ## Example usage
+`roslaunch abby_gazebo abby_world.launch` 
+
+This brings up the Gazebo simulation, ready to accept ROS-I style trajectory commands
+
+## Running tests/demos
+in another window,
+`rosrun example_joint_space_planner`
+or
+`rosrun example_robot_interface test_ik_traj_sender`
+
+
+2) review IK issue: multiple solutions (if any)
+ -> planning problem: if want to describe motion of tool in Cartesian space...
+   
+  see test_ik_traj_sender2.cpp in example_joint_space_planner:
+  
+      b_des<<1,0,0;
+    t_des<<0,1,0;
+    n_des = t_des.cross(b_des);
+    
+    Eigen::Matrix3d R_des;
+    R_des.col(0) = n_des;
+    R_des.col(1) = t_des;
+    R_des.col(2) = b_des;
+    
+   Eigen::Affine3d a_tool_des; // expressed in DH frame
+   a_tool_des.linear() = R_des; // keep orientation frozen
+   
+   // but sweep y-value of hand origin, at fixed x and z
+   for (double y_var = -0.4; y_var<0.4; y_var+=0.02) {
+        p[0] = x_des;
+        p[1]=  y_var;
+        p[2] = z_des;
+        a_tool_des.translation()=p;
+   
+        //is this point reachable?
+        nsolns = ik_solver.ik_solve(a_tool_des);
+        ROS_INFO("there are %d solutions",nsolns);
+        ik_solver.get_solns(q6dof_solns);
+        if (nsolns>0) {
+            Eigen::VectorXd soln_node;
+            single_layer_nodes.clear();
+            for (int isoln =0; isoln<nsolns;isoln++) {
+                soln_node = q6dof_solns[isoln]; // convert to compatible datatype
+                single_layer_nodes.push_back(soln_node);
+                
+            }
+          path_options.push_back(single_layer_nodes);
+          nlayer = path_options.size();
+          ROS_INFO("filled layer %d",nlayer);
+        }
+        
+  This gives a list of options at various points along the path.
+  
+  3) stagecoach planning      
+        
+        //do some planning:
+     cout<<"instantiating a JointSpacePlanner:"<<endl;
+     { //limit the scope of jsp here:
+       JointSpacePlanner jsp (path_options,weights);
+       cout<<"recovering the solution..."<<endl;
+       jsp.get_soln(optimal_path);
+       //double trip_cost= jsp.get_trip_cost();
+
+     }      
+   
+   4) 
+     how to send trajectories to robot:  Ros-Industrial
+     
+     see: example_robot_interface/test_traj_sin_sender
+     
+     watch on Abby
+     
+     
+    
+     
+        

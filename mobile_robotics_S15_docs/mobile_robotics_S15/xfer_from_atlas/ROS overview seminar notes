@@ -1,0 +1,107 @@
+ROS lecture:
+1) what is ROS? 
+    (communications; re-usable open-source code; style of programming= loosely coupled nodes; tools) 
+   why ROS?
+    (more code re-use; faster development; ecapsulation; teaming; software arch standards; 
+       ease of transition from simulation to hardware)
+
+   demos: VRC, Atlas wall cutting, Atlas grasping, Atlas valve turning, 
+
+What is involved in the above?
+ 
+ user interface (sensor display)
+ overlay "affordances"; intuitive interaction-> autonomous execution
+ footstep planning
+ walking execution
+ balance
+ inverse kinematics
+ sensor calibration and interpretation
+ compliant-motion control
+ localization/mapping
+ recognition/localization of objects
+
+ These are executed by separate "nodes"
+   -a node is independent and subscribes/publishes info
+   -nodes can be persistent or terminating
+   -nodes can be coordinated via a higher-level state machine
+   -nodes allow parallel development and encapsulation; easier devel/test/integration
+      (interfaces partially constrained: ROS "topics" and "messages")
+
+ Simulation (gazebo) vs physical deployment (e.g. drcsim vs Atlas)
+
+---------------
+2) using ROS: some essential concepts
+  ENVIRONMENT: typically Linux; some nuisance installing/configuring ROS;
+    releases by letter...(Electric, Fuerte, Groovy, Hydro, Indigo, Jade...)
+    Code in C++ or Python (some LISP).
+    Easy to distribute across a network w/ multiple computers
+     (have one "master" that runs unique node "roscore" to coordinate communications)
+    Ethernet communications (UDP or TCP used by ROS nodes, built into classes)
+
+  DRIVERS:
+  need all actuators and sensors to have ROS drivers
+   (see e.g. Sick LIDAR driver; Kinect; Velodyne; USB cameras; joystick, SpaceNav, LEAP, Wii, ...;
+     fewer actuators; may need to write your own; cRIO; Arduino;)
+   converts I/O to abstract ROS messages (analogous to neural transmissions)
+
+  TRANSFORMS:
+   need to calibrate and specify sensor transforms relative to some robot-fixed reference frame
+   (e.g. LIDAR data is merely a list of distances; need to convert this to x,y,z coords for each "ping")
+   Convert LIDAR data to point-cloud data (3-D list of points, w/rt declared reference frame)
+   Note: base frame of sensor can move--e.g. camera on arm; augment w/ more transforms
+
+  LIBRARIES:
+      Open_CV, Point-Cloud Library, Eigen, TF (transforms), KDL (kinematics and dynamics library)
+
+  PACKAGES (thousands of these are open/free)
+      some favorites:  Rviz, SLAM, AMCL, Octomap, MoveIt!, 
+
+3) using simulation in ROS:
+  MODEL: must specify robot model with lots of details
+    URDF, XACRO, SDF, ...
+    each "link" has a coordinate frame, an inertial model, a visualization model, a collision model
+    a "joint" defines relationship between two "links"
+       transform from parent to child frame;
+       may be static, else requires specification of a motion axis and motion params,
+        including joint limits, saturation effort, velocity limits, friction, ...
+     separate "controller" node(s)  responsible for "publishing" effort values to each movable joint
+       (e.g., PID goes here)
+
+   SENSOR MODELS:
+    Model needs to include transforms describing mounting position/orientation of sensors relative to
+      specified robot link.  
+    Sensors are emulated: 
+      high-speed/high-res emulation of video (creates synthetic images of modeled environment)
+      emulation of LIDAR
+      emulation of Kinect
+      publish robot_state: position/velocity of each joint
+      publish robot_command: position &/or velocity &/or accel &/or effort
+      controller node simulator should emulate ACTUAL behavior of actuator hardware
+         (e.g., PID on our robots is done by cRIO; accepts speed/spin rate commands from ROS)
+         (ROS commands are "bridged" to cRIO w/ custom interface node)
+
+   Sensor Visualization: Rviz
+     subscribes to sensor messages (whether real or emulated)
+     can superimpose model of robot (useful whether simulated or real)
+     can display sensor data (e.g. video, point clouds)
+     user can interact directly with the data visualization, e.g. to highlight points of interest;
+       
+4)  Robot software development with ROS
+    IF have a ROS interface (device drivers for sensors and actuators)
+    AND have a robot model (including dynamics and collision model and sensor emulators)
+    CAN develop most of the desired code in simulation (use Gazebo and Rviz)
+    PORT to physical robot is then merely redirection of the roscore master (IP setting)
+      NO changes in code required.  (Not even recompiling)
+
+    ROS organization of loosely coupled nodes promotes problem decomposition, parallelization, 
+     team collaboration, encapsulation, software re-use
+
+    tools for data logging, playback and display assist debugging/tuning
+
+    Has demonstrated supporting rapid prototyping of new systems and new applications
+   
+
+   
+ 
+
+

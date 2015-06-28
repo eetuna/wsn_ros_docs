@@ -1,0 +1,22 @@
+outline for Sept 24:
+
+go over hmwk/demos
+
+demo: instructions_how_to_collect_and_analyze_joint_data
+ (from Atlas_rosbag_data/drcsim_gain_tests)
+ gravity and inertia identification example
+
+go over modeling the Atlas robot (pdf, urdf, rviz frames) 
+
+need next layer: smooth-move to destination goals;
+
+behavior server: smoothMove in joint space
+action client; 
+playfile; 
+trajectory scripts
+  *.yml
+
+assignment: roslaunch atlas_utils qual_task_2.launch
+(alt: improve on arm gains???)
+
+

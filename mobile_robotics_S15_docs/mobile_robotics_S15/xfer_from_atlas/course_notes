@@ -1,0 +1,110 @@
+course org:
+
+FIRST HALF: MOBILITY
+  ROS, vel_cmd, speed profiling, AMCL, steering, reflexes, wall-following (or dyn planning)
+  mid-sem demos!
+
+T, 1/13: intro
+   get names; will set up accnts (1lmiagmc!); lab access; 
+   recommended books;
+   get some fdbk from students (to form lab teams)
+   show vids; 
+   start intro to ROS; 
+   (will do live demo of ROS on Thursday in Glennan 519C).
+   things we'll use:
+	frames, Twist, wheeled kin, odom, 
+        simu vs physical
+        gazebo vs rviz
+   send me (and Luc) github account!  (github.com; use Case e-mail addr)
+       (rqrs validation to github)
+
+
+R, 1/15:  assign PS1: move robot in stdr
+   cover: demo github; repo clone; git gui; commit; push
+    (post git and bitbucket instructions from DRC class)
+     intro to ROS notes; demo vel_cmd
+
+   PS1:   create ROS vel_cmd publisher node;  use this with stdr
+          adjust timings to see how far can make robot go.
+          submit publisher code; submit a movie (Kazaam).
+          (try this w/ 2ndfloor map?)
+
+   prep:  update documentation for assignment:
+          update docs (?) for pkg create, catkin_make, 
+            edit package.xml and CMakeLists.txt
+          minimal publisher and example vel_cmd publisher source code (in repo)
+          how to start simulator
+          how to rosrun...
+          how to make a Kazaam recording
+   (assignment 1 due Thurs, 1/22)
+          
+T, 1/20:  prep for assgmt 2: do speed profiling:
+         --ramp up/ramp down vel (trapezoid); 
+         --then do 90deg turn (also trapezoid)
+         --then move again
+          more ROS stuff; 
+
+R, 1/22:  Assign PS2: have Jinx move down the hall (open loop vel_cmd)
+          PS1 due (stdr vel_cmd)
+
+          prep docs for hardware use, compiling; E-stop; running;
+          demo Jinx;
+
+
+R, 1/29:  Assign PS3 (old PS4): graceful recovery from E-stop (resume motion after halt w/o jump)
+          goto lab to see PS2 demos;
+          cover LIDAR; should do LIDAR E-stop in simu first;
+
+R, 2/5:   Assign PS4: LIDAR-based reflexive halt, graceful recovery, w/ open-loop vel_cmd 
+          goto lab to see PS3 demos
+
+          cover/docs: steering alg; segment publishing?; 
+            AMCL!! (in simu and on Jinx)
+
+R, 2/12:  Assign PS5: steering implementation; 
+          goto lab to see PS4 reflex demos
+
+R, 2/19:  Assign PS6:  wall following (+ nom path??) SIMU
+          goto lab to see PS5 steering demos 
+
+R, 2/26:  Assing PS7:  wall following + path DEMO
+
+
+R, 3/4: (1st half demos...; end mobility)
+          goto lab to see PS7 Jinx get to goal, going around obstacles (barrels in hall)
+         Mid-term reports!
+(mid-term grades due 3/9)
+
+(3/9-3/13 Spring Brk)
+
+2nd half: start point-cloud processing, planning, manip
+T, 3/17: Assign PS8: ABB arm fwd kin??  frames?  start IK?
+         Gazebo simu of some arm motion??
+
+T, 3/24:  Assign PS9: move arm (some task)
+
+T, 3/31:  Assign PS10: IK/planning; trajectories; move arm to specified pose (Cart->JS)
+
+T, 4/7:   Assign PS11: Interactive w/ pt-cloud: click point, arm touches
+
+T, 4/14:  Assign PS12: Robot at fixed pose; see object w/ point-cloud;
+             grab object (autonomous; but possible help from OCS??  a prior info?)
+
+T, 4/21:  Assign Final "fetch"; goto nom coords; find object; move_base to nom pose; 
+          plan/execute grasp; return "home"
+
+R, 4/23:  prelims...demo "fetch"; possible pass out of final;
+
+(exam 4/30, 12:30-3:30; 2nd try "fetch")
+
+----------
+sync:
+  e.g., if demos on T, new assignment on T,
+     groups should meet on W (w/ Luc); then demo on following T (?)
+
+(i.e., prefer Luc W's, demos T's)
+
+
+  
+
+          

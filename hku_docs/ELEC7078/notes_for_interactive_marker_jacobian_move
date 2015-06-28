@@ -1,0 +1,97 @@
+1) bringup some atlas world, e.g. task 7:
+   VRC_CHEATS_ENABLED=1 roslaunch drcsim_gazebo drc_practice_task_7.launch
+   wait for Atlas to lower and stand
+   (this is best to do in the drcsim release, since Atlas falls down in the pre-release launch)
+
+2) move Atlas in front of valve wall
+   select the up/down/left/right icon in the menu bar of the Gazebo display
+   click on Atlas in the Gazebo display
+   drag him to a location in front of the valve wall such that a valve is reachable
+   click on the arrow icon on the menu bar of the Gazebo display, so you don't accidentally move Atlas again
+
+3) pin the torso:
+  rostopic pub --once /atlas/mode std_msgs/String '{data: "pinned_with_gravity"}'
+
+4) bring up rviz: 
+  add robot model, 
+  select "utorso" as the "fixed frame"
+  add pointcloud2 
+  under the pointCloud2 entry (left panel of rviz), choose the "topic" from the dropdown to be:
+    multisense_sl/camera/points2
+
+5) start low-level jnt ctlr: 
+   rosrun lowLevelJointServoV2 lowLevelJointServoV2
+    (this is the experimental version, to be made consistent with physical Atlas, 
+      and which uses gravity-load estimates and inertia estimates from separate publishers)
+
+6) start the gravity-load publisher node:
+ rosrun mass_calcs stand_torque_calc  
+
+7) start the inertia calculator/publisher:
+   rosrun mass_calcs H_calc
+
+-------------
+8) start the hand grasp-frame publisher: 
+   rosrun grasp_tf grasp_tf_node
+    publishes frames l_grasp and r_grasp to tf
+
+----to pre-position the robot using the behavior server:
+9) start the behavior server:
+   rosrun behavior_server behavior_server
+
+10) run a playfile to pre-position the robot near to grasping a valve, e.g.:
+  cd to: elec7078/rosbuild/elec7078_newman/traj_files, and:
+  rosrun play_file play_file prep_valve_grab.traj
+
+---optional components----
+
+11) if published jacobians are used, start the jacobian publisher:
+   rosrun jacobian_publisher jacobian_publisher
+
+12) optionally, start the LIDAR spinning:
+  rostopic pub --once /multisense_sl/set_spindle_speed std_msgs/Float64 '{data: 3.0}'
+
+-------interactive rviz marker------------
+13) start the interactive marker node:
+  rosrun grasping grasp_goal
+
+14) in rviz, "add"
+    InteractiveMarkers
+    then in "displays" panel (on left of rviz), under the new "interactiveMarker" item, expand this,
+    and next to "Update Topic", choose: /grasp_goal/update
+
+
+-----------jacobian_move_behavior server and client---------
+15) start the behavior server for right-hand Jacobian moves:
+  rosrun jacobian_move_behavior rhand_jacobian_move_behavior
+
+16) start the client for right-hand Jacobian moves:
+  rosrun jacobian_behavior_client_example rhand_jacobian_client_example
+
+ rostopic pub --once grasp_move_trigger std_msgs/UInt64 '{data: 1}'
+
+
+---------------to use a grasp frame conveniently defined on the palm of the hand:
+17) start the grasp-frame publisher: 
+  rosrun grasp_tf grasp_tf_node
+
+  (then can compute and use Jacobians with respect to this frame)
+
+
+
+
+Some compiler tricks:
+
+hku_clean
+hku_make (compiles the entire team code)
+hku_make -d package_name  (faster, for compiling just one package)
+
+If a window does not recognize ros package paths, do this:
+cd ~/ros_workspace/repository_name
+source catkin/devel/setup.sh
+export ROS_WORKSPACE=`pwd`
+export ROS_PACKAGE_PATH=$ROS_WORKSPACE:$ROS_PACKAGE_PATH
+(though this should no longer be necessary with recent fixes)
+
+
+

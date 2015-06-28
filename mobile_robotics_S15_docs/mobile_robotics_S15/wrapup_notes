@@ -1,0 +1,55 @@
+acquire and return can:
+
+sub-components: locomotion
+0) pre-position arm for viewing and collision consideration
+1) get map of lab area (2nd floor OK??)
+2) IM to set/execute locomotion goal to view table...e.g., can see table from several-meter distance (via camera)
+3) set/execute locomotion goal for view approach: get closer to table to get good view of object via Kinect
+4) set/execute platform locomotion goal for pre-manipulation approach (use template; avoid collisions w/ table)
+
+manipulation:
+1) from point-cloud view, select patch to define table (alt: pre-define table height);
+2) select patch on object--> fit model, establish coords for manip (relative to base_link)
+3) plan collision-free approach: 
+  3a) move to pre-approach (joint-space; canned move?)
+  3b) move to pre-approach (joint-space OK?; hover above object)
+  3c) move to grasp pose (gripper fingers surround object
+  
+4) grasp object (gripper control)
+5) lift object (preferred: put objet in bin)
+
+locomote home:
+6) back up?
+7) plan/execute path back to home (revisit orig poses?)
+
+
+organization:
+*CAN have locomotion always listening for IM locomotion commands
+*CAN have point-cloud processing always ready for patch-selection/mode-selection
+ (communicate result: via publication?  service call?)
+*CAN have arm control act on service calls for various moves (incl move to perception goal)
+
+
+nodes: keep processing low, except when called upon
+- like "action servers"
+- extend to autonomy: 
+   string subgoals together (seeking behavior, approach behavior (incl path planning, and using template),
+        perception behavior (look for object), arm-motion-plan behavior, grasp plan/behavior,
+          "stow" behavior, return-home (or deliver) behavior
+   state machines: SMACH
+   
+Generalization (autonomy): 
+  --dependence on a priori knowledge (e.g., where to look and what to look for)
+  perception: given a model of an object, find if/where the model fits in a scene
+        morph the model?  e.g., what is a cup?  
+  navigation: given destination coordinates, plan a safe path to the goal
+        --may require building map en-route
+        --(free, occupied, unknown cells)
+        --search through "navigable" terrain (known smooth, flat; unknown, worthy of exploration?)
+  grasp planning: given object shape and given finger shape/motion capability, 
+    determine options for stable grasp--> pose of hand frame relative to pose of object frame
+    form closure; force closure (friction); 
+    
+
+  
+    

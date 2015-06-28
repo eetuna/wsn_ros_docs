@@ -1,0 +1,20 @@
+Did this to run STDR simulator:
+
+sudo apt-get install ros-hydro-stdr-simulator
+
+roslaunch stdr_launchers server_with_map_and_gui_plus_robot.launch
+
+
+rostopic pub  robot0/cmd_vel geometry_msgs/Twist '[0,0,0]' '[0,0,1]'
+
+rostopic pub  robot0/cmd_vel geometry_msgs/Twist '[0,0,0]' '[0,0,0.1]'
+
+created test package:
+  hku_create_pkg stdr_hku_vel_cmd_pub roscpp std_msgs geometry_msgs
+  
+  put in .../src file this test code:  
+     example_cmd_vel_publisher.cpp
+  Edited CmakeLists to add this executable
+
+  compiled with:   hku_make stdr_hku_vel_cmd_pub
+

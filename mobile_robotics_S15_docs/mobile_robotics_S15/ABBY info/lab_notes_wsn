@@ -1,0 +1,493 @@
+started up abby;
+  (2 switches--one for IRC5, another for PC)
+  ssh into abby: 6. ssh abby@192.168.0.150
+password:1lmiagmc!
+
+roscore
+
+start up IRC5:  (see list; pwr up in auto mode, ack serv rqst, press motors on, press "play")
+
+
+roslaunch abby_launch abby.launch
+
+rosnode list
+/base_laser1
+/camera/depth/metric
+/camera/depth/metric_rect
+/camera/depth/points
+/camera/depth/rectify_depth
+/camera/depth_registered/metric
+/camera/depth_registered/metric_rect
+/camera/depth_registered/rectify_depth
+/camera/disparity_depth
+/camera/disparity_depth_registered
+/camera/driver
+/camera/ir/rectify_ir
+/camera/points_xyzrgb_depth_rgb
+/camera/register_depth_rgb
+/camera/rgb/debayer
+/camera/rgb/rectify_color
+/camera/rgb/rectify_mono
+/camera_nodelet_manager
+/color_self_filter
+/crio_receiver
+/gripper
+/jaw_tip1_broadcaster
+/jaw_tip2_broadcaster
+/joint_trajectory_action
+/motion_download_interface
+/odom_translator
+/robot_state
+/robot_state_publisher
+/rosout
+/twist_receiver
+/wheel_state_publisher
+
+rostopic list: 
+camera...
+/camera/rgb/rectify_mono/parameter_updates
+/cmd_vel
+/command
+/crio_sensors
+/diagnostics
+/feedback_states
+/flipped_pose
+/gps_fix
+/joint_states
+/joint_trajectory_action/cancel
+/joint_trajectory_action/feedback
+/joint_trajectory_action/goal
+/joint_trajectory_action/result
+/joint_trajectory_action/status
+/motors_enabled
+/odom
+/pose
+/power_state
+/rosout
+/rosout_agg
+/sonar_1
+/sonar_2
+/sonar_3
+/sonar_4
+/sonar_5
+/tf
+
+------after IRC ack's clients connected, DID get this from rostopic echo joint_states:
+eader: 
+  seq: 1482
+  stamp: 
+    secs: 1426189444
+    nsecs: 415182977
+  frame_id: ''
+name: ['joint1', 'joint2', 'joint3', 'joint4', 'joint5', 'joint6']
+position: [-9.374845103593543e-05, -1.5709863901138306, 0.785432755947113, 0.0005227980436757207, -7.702269067522138e-05, 6.697104254271835e-05]
+velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+effort: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+could not stow arm.  
+tried: rosrun abby_arm_actions stow_arm.py
+said:  [INFO] [WallTime: 1426189923.096846] Node initialized.
+[INFO] [WallTime: 1426189923.101897] Waiting for action server...
+hung!  then, after ctl-C, said:
+
+
+
+^C[INFO] [WallTime: 1426189942.175992] Connected to action server.
+
+rosnode list
+/abby_irb_120_kinematics
+/abby_move_irb_120
+/base_laser1
+/camera/depth/metric
+/camera/depth/metric_rect
+/camera/depth/points
+/camera/depth/rectify_depth
+/camera/depth_registered/metric
+/camera/depth_registered/metric_rect
+/camera/depth_registered/rectify_depth
+/camera/disparity_depth
+/camera/disparity_depth_registered
+/camera/driver
+/camera/ir/rectify_ir
+/camera/points_xyzrgb_depth_rgb
+/camera/register_depth_rgb
+/camera/rgb/debayer
+/camera/rgb/rectify_color
+/camera/rgb/rectify_mono
+/camera_nodelet_manager
+/color_self_filter
+/crio_receiver
+/environment_server
+/gripper
+/jaw_tip1_broadcaster
+/jaw_tip2_broadcaster
+/joint_trajectory_action
+/motion_download_interface
+/odom_translator
+/ompl_planning
+/planning_scene_validity_server
+/robot_state
+/robot_state_publisher
+/rosout
+/trajectory_filter_server
+/twist_receiver
+/wheel_state_publisher
+
+
+rosservice list: 
+/abby_gripper/gripper
+/abby_irb_120_kinematics/get_loggers
+/abby_irb_120_kinematics/set_logger_level
+/abby_move_irb_120/get_loggers
+/abby_move_irb_120/set_logger_level
+/base_laser1/get_loggers
+... (cameras)
+/disable_motors
+/enable_motors
+/environment_server/get_loggers
+/environment_server/set_logger_level
+/environment_server/tf_frames
+/jaw_tip1_broadcaster/get_loggers
+/jaw_tip1_broadcaster/set_logger_level
+/jaw_tip2_broadcaster/get_loggers
+/jaw_tip2_broadcaster/set_logger_level
+/joint_trajectory_action/get_loggers
+/joint_trajectory_action/set_logger_level
+/motion_download_interface/get_loggers
+/motion_download_interface/set_logger_level
+/ompl_planning/get_loggers
+/ompl_planning/set_logger_level
+/planning_scene_validity_server/get_loggers
+/planning_scene_validity_server/set_logger_level
+/reboot_crio
+/robot_state/get_loggers
+/robot_state/set_logger_level
+/robot_state_publisher/get_loggers
+/robot_state_publisher/set_logger_level
+/rosout/get_loggers
+/rosout/set_logger_level
+/trajectory_filter_server/filter_trajectory_with_constraints
+/trajectory_filter_server/get_loggers
+/trajectory_filter_server/set_logger_level
+
+rostopic info /joint_trajectory_action/goal
+Type: control_msgs/FollowJointTrajectoryActionGoal
+
+Publishers: None
+
+Subscribers: 
+ * /joint_trajectory_action (http://192.168.0.150:43955/)
+
+rosnode info joint_trajectory_action
+--------------------------------------------------------------------------------
+Node [/joint_trajectory_action]
+Publications: 
+ * /command [trajectory_msgs/JointTrajectory]
+ * /joint_trajectory_action/result [control_msgs/FollowJointTrajectoryActionResult]
+ * /joint_trajectory_action/feedback [control_msgs/FollowJointTrajectoryActionFeedback]
+ * /rosout [rosgraph_msgs/Log]
+ * /joint_trajectory_action/status [actionlib_msgs/GoalStatusArray]
+
+Subscriptions: 
+ * /joint_trajectory_action/cancel [unknown type]
+ * /joint_trajectory_action/goal [unknown type]
+ * /feedback_states [control_msgs/FollowJointTrajectoryFeedback]
+
+Services: 
+ * /joint_trajectory_action/set_logger_level
+ * /joint_trajectory_action/get_loggers
+
+
+contacting node http://192.168.0.150:43955/ ...
+Pid: 4847
+Connections:
+ * topic: /rosout
+    * to: /rosout
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /command
+    * to: /motion_download_interface
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /feedback_states
+    * to: /robot_state (http://192.168.0.150:57028/)
+    * direction: inbound
+    * transport: TCPROS
+
+---- rosnode info robot_state
+--------------------------------------------------------------------------------
+Node [/robot_state]
+Publications: 
+ * /feedback_states [control_msgs/FollowJointTrajectoryFeedback]
+ * /joint_states [sensor_msgs/JointState]
+ * /rosout [rosgraph_msgs/Log]
+
+Subscriptions: None
+
+Services: 
+ * /robot_state/get_loggers
+ * /robot_state/set_logger_level
+
+
+contacting node http://192.168.0.150:57028/ ...
+Pid: 4821
+Connections:
+ * topic: /rosout
+    * to: /rosout
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /feedback_states
+    * to: /joint_trajectory_action
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /joint_states
+    * to: /robot_state_publisher
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /joint_states
+    * to: /environment_server
+    * direction: outbound
+    * transport: TCPROS
+
+--------rosnode info motion_download_interface
+--------------------------------------------------------------------------------
+Node [/motion_download_interface]
+Publications: 
+ * /rosout [rosgraph_msgs/Log]
+
+Subscriptions: 
+ * /command [trajectory_msgs/JointTrajectory]
+
+Services: 
+ * /motion_download_interface/get_loggers
+ * /motion_download_interface/set_logger_level
+
+
+contacting node http://192.168.0.150:55255/ ...
+Pid: 4835
+Connections:
+ * topic: /rosout
+    * to: /rosout
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /command
+    * to: /joint_trajectory_action (http://192.168.0.150:43955/)
+    * direction: inbound
+    * transport: TCPROS
+
+
+***motion_download_interface looks interesting
+
+...abby.launch includes:
+   <include file="$(find abby_launch)/launch/actuators.launch" if="$(arg real_robot)">
+
+
+more actuators.launch 
+<launch>
+    <arg name="arm" default="True" />
+    <include file="$(find abby_launch)/launch/arm.launch" if="$(arg arm)" />
+	<node name="arm_state_publisher" pkg="abby_arm_navigation" type="stowed_arm_publisher.py" unless="$(arg arm)" />
+    <include file="$(find abby_launch)/launch/base.launch" />
+    <node name="gripper" pkg="rosserial_python" type="serial_node.py" >
+        <param name="~port" value="/dev/ttyUSB0"/>
+    </node>
+</launch>
+
+ more arm.launch
+<launch>
+    <arg name="irc5_ip" default="192.168.0.50" />
+    <arg name="streaming" default="" />
+    <arg name="connect" default="true" />
+    <arg name="rviz" default="false"/>
+    <include file="$(find industrial_robot_client)/launch/robot_interface_download.launch">
+        <arg name="robot_ip" value="$(arg irc5_ip)"/>
+    </include>
+    <include if="$(arg rviz)" file="$(find abby_launch)/launch/rviz.launch"/>
+</launch>
+
+ more robot_interface_download.launch 
+<launch>
+
+  <!-- This launch file provides a socket-based connection to industrial robots
+       that implement the standard ROS Industrial simple_message protocol.
+	   *** Motion control is implemented by DOWNLOADING path data to the robot ***
+           (for STREAMING path-control, use a different launch file)
+
+       Several nodes are started, to supply both low-level robot communication
+       and higher-level actionlib support:
+         - robot_state : publishes current joint positions and robot state data
+         - motion_download_interface : command robot motion by sending motion points to robot
+         - joint_trajectory_action : actionlib interface to control robot motion
+
+    Usage:
+      robot_interface_download.launch robot_ip:=<value>
+  -->
+
+  <!-- robot_ip: IP-address of the robot's socket-messaging server -->
+  <arg name="robot_ip" />
+  
+  <!-- copy the specified IP address to the Parameter Server, for use by nodes below -->
+  <param name="/robot_ip_address" type="str" value="$(arg robot_ip)"/>see list;
+  
+  <!-- robot_state: publishes joint positions and robot-state data
+                   (from socket connection to robot) -->
+  <node pkg="industrial_robot_client" type="robot_state" name="robot_state"/>
+  
+  <!-- motion_download_interface: sends robot motion commands by DOWNLOADING path to robot
+                                  (using socket connection to robot) -->
+  <node pkg="industrial_robot_client" type="motion_download_interface" name="motion_download_interface"/>
+  
+  <!-- joint_trajectory_action: provides actionlib interface for high-level robot control -->
+  <node pkg="industrial_robot_client" type="joint_trajectory_action" name="joint_trajectory_action"/>
+
+</launch>
+
+rosnode info robot_state
+--------------------------------------------------------------------------------
+Node [/robot_state]
+Publications: 
+ * /feedback_states [control_msgs/FollowJointTrajectoryFeedback]
+ * /joint_states [sensor_msgs/JointState]
+ * /rosout [rosgraph_msgs/Log]
+
+Subscriptions: None
+
+Services: 
+ * /robot_state/get_loggers
+ * /robot_state/set_logger_level
+
+
+contacting node http://192.168.0.150:57028/ ...
+Pid: 4821
+Connections:
+ * topic: /rosout
+    * to: /rosout
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /feedback_states
+    * to: /joint_trajectory_action
+    * direction: outboundunches nee
+    * transport: TCPROS
+ * topic: /joint_states
+    * to: /robot_state_publisher
+    * direction: outbound
+    * transport: TCPROS
+ * topic: /joint_states
+    * to: /environment_server
+    * direction: outbound
+    * transport: TCPROS
+
+---rostopic info /command
+Type: trajectory_msgs/JointTrajectory
+
+Publishers: 
+ * /joint_trajectory_action (http://192.168.0.150:43955/)
+
+Subscribers: 
+ * /motion_download_interface (http://192.168.0.150:55255/)
+
+
+-----------analysis----------
+motion_download_interface is alive, and subscribed to topic "/command" which 
+carries: trajectory_msgs/JointTrajectory
+
+launched from: robot_interface_download.launch 
+via arm.launch, which includes:
+    <include file="$(find industrial_robot_client)/launch/robot_interface_download.launch">
+        <arg name="robot_ip" value="$(arg irc5_ip)"/>
+    </include>
+    
+ motion_download_interface comes from: industrial_core/industrial_robot_client
+ CMakeLists includes:
+ add_executable(motion_download_interface
+  src/generic_joint_downloader_node.cpp)
+target_link_libraries(motion_download_interface 
+  industrial_robot_client 
+  simple_message
+  
+  look at generic_joint_downloader_node.cpp:
+    instantiates a "JointTrajectoryDownloader"
+      see industrial_robot_client/src/joint_trajectory_downloader.cpp
+      
+  
+  ${catkin_LIBRARIES})   
+  
+ JointTrajectoryDownloader::send_to_robot(const std::vector<JointTrajPtMessage>& messages)
+  CAN accept a single point (copies this point to get 2 pts)
+  stuffs special chars for start and end points (don't need to provide in message)
+  
+  see: industrial_robot_client/src/joint_trajectory_interface.cpp:
+  
+  sets up:    this->sub_joint_trajectory_ = this->node_.subscribe("joint_path_command", 0, &JointTrajectoryInterface::jointTrajectoryCB, this);
+  oddly, same CB used as a service??
+              this->srv_joint_trajectory_ = this->node_.advertiseService("joint_path_command", &JointTrajectoryInterface::jointTrajectoryCB, this);
+            (ah--same name, different arg types)
+            
+ void JointTrajectoryInterface::jointTrajectoryCB(const trajectory_msgs::JointTrajectoryConstPtr &msg)
+{
+  ROS_INFO("Receiving joint trajectory message"); ...
+  
+...CB is subscribed to topic "joint_path_command" w/ message type: trajectory_msgs::JointTrajectory
+but Abby has 
+motion_download_interface is alive, and subscribed to topic "/command" which 
+    carries: trajectory_msgs/JointTrajectory
+    
+wsn: can't explain topic-name diff: /command (on Abby) vs joint_path_command (defined in ros-I code).
+but both use message type: trajectory_msgs::JointTrajectory
+             
+wsn's "example_robot_interface" code...
+ subscribes to topic "joint_path_command"
+  jointTrajectoryCB(const trajectory_msgs::JointTrajectory &traj)
+  (but sends points to rrbot, modified for abby Gazebo model)
+  
+  take a look at: wsn_examples/example_robot_interface/test_traj_sin_sender.cpp
+  *****modify this as follows*****
+   *change topic from "joint_path_command" to "command"
+   *reduce all amplitudes (except tool flange?)
+   *start ABB-irb120 from home pose (all zeros)
+   *adjust speed: currently, phase+= 0.1rad/0.2sec--> requires about 30 sec to complete a cycle?
+   
+   
+  abby launches needed:  arm.launch
+   (includes robot_interface_download.launch and sets IP addr)
+   
+   from: <include file="$(find abby_launch)/launch/arm.launch"
+   
+---what happens if first command is far from current robot pose?
+---do I need sequence numbers? (one per trajectory msg)
+---are the joint names correct?
+---need to xfer to abby computer (rosbuild; which package?)...nope; try remote master, and run sender from laptop
+
+rosmsg show trajectory_msgs/JointTrajectory
+std_msgs/Header header
+  uint32 seq
+  time stamp
+  string frame_id
+string[] joint_names
+trajectory_msgs/JointTrajectoryPoint[] points
+  float64[] positions
+  float64[] velocities
+  float64[] accelerations
+  float64[] effort
+  duration time_from_start
+
+---------------3/23/2015 irb120 tests-----
+had success w/ hydro and ros-I and test trajectory
+
+hardware:
+1) see photos for IRC5 start-up
+2) roslaunch abb_arm_launch arm.launch (from Ed's code)
+3) rosrun example_robot_interface test_traj_sin_sender
+  --edits: had to change joint1 to joint_1, etc
+  topic is "joint_path_command"
+  
+  alt: rosrun example_joint_space_planner test_ik_traj_sender2
+  
+  note: w/ arm "stowed", angles are:
+  0.06, -1.07, 0.61, -0.07, -1.46, -0.81
+  
+shut down:  turn of black switch on ABBY
+
+
+
+

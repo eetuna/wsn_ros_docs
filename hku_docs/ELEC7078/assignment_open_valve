@@ -1,0 +1,43 @@
+angle/axis to R matrix:
+http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToMatrix/
+
+reverse:
+http://www.memphys.sdu.dk/~besold/INDEX/axis-angle.pdf
+
+cos(theta) = 0.5*[tr(R)-1]  (theta in range [0,pi])
+
+and axis n_vec = [n1;n2;n3] from N = [0 -n3 n2;
+                                      n3 0 -n1;
+                                     -n2 n1  0]
+
+and N = (1/(2*sin(theta))*(R-R')
+
+*assignment: move right to open valve
+
+1) run a playfile traj script to pre-position right arm
+
+2) start up jacobian pgm 1 to move right hand to desired coords/orientation
+  (talks to LLJC);
+   Need to find pose that is reachable
+
+3) run playfile cmd to close hand
+
+4) start up jacobian pgm to rotate hand CCW about pelvis -x axis until jnt limit (turn valve CCW)
+
+5) run playfile to open hand;
+
+6) move palm slightly in -x direction (release valve)
+
+7) rotate hand CW about pelvis x axis until jnt limit
+
+8) move +x dir to regrasp position
+
+9) run playfile to close hand
+
+10) re-run jacobian pgm to rotate valve CCW
+
+
+
+
+
+

@@ -1,0 +1,54 @@
+See: http://ros.org/wiki/geometry
+note that this includes:
+  *bullet (for lin algebra)--though this is now (partially) folded 
+    into tf:: (instead of bt::)
+    e.g. for tf::Matrix, tf::Vector3, tf::Quaternion
+  *KDL (for robot kinematics)
+  *tf (for coord frames)
+
+KDL looks good; see: http://ros.org/wiki/kdl
+ and: http://www.orocos.org/kdl
+
+using KDL parser to get tree from URDF looks useful; see:
+http://ros.org/wiki/kdl_parser/Tutorials/Start%20using%20the%20KDL%20parser
+
+want to use:  KDL::ChainJntToJacSolver (for Jacobians)
+
+see (PR2): cartesian_wrench_controller in the robot_mechanism_controllers 
+
+see this example: 
+http://www.ros.org/wiki/pr2_mechanism/Tutorials/Coding%20a%20realtime%20Cartesian%20controller%20with%20KDL
+
+note usage:
+                                    
+  90   jnt_to_pose_solver_->JntToCart(q_, x_);
+  91   jnt_to_jac_solver_->JntToJac(q_, J_);
+
+note that torques are computed in a control algorithm:
+ 127   chain_.setEfforts(tau_);
+
+need to learn about plug-ins:
+
+ 137 /// Register controller to pluginlib                                                                                                                                              
+ 138 PLUGINLIB_REGISTER_CLASS(MyCartControllerPlugin,
+ 139                          my_controller_ns::MyCartControllerClass,
+ 140                          pr2_controller_interface::Controller)
+
+
+how to get joint angles from Gazebo?
+in pr2_arm_kinematics.cpp, have line (in fnc starting line 250):
+
+request.robot_state.joint_state.position[i];
+where "request" is arg of passed into fnc of type:
+kinematics_msgs::GetPositionFK::Request &request
+
+see also use of joint names to reference URDF model
+
+also uses: tf_->transformPose(des_frame,pose_in,pose_out);
+
+..../usr/share/drcsim-1.0/ros/drc_robot_utils....
+roslaunch drc_robot_utils drc_robot.launch
+roslaunch drc_robot_utils drc_robot.launch
+
+
+

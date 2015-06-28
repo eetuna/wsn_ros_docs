@@ -1,0 +1,40 @@
+opencv example:
+
+compile this code with:
+
+  rosmake opencv_sample
+
+run this code with:
+
+  rosrun opencv_sample opencv_sample
+
+by default, this node will subscribe to the topic: //multisense_sl/camera/right/image_rect_color
+optionally, can rosrun the code with a command-line argument to use an alternative input source, e.g.:
+
+  rosrun opencv_sample opencv_sample in:=//topic_name
+
+the file opencv_sample.cpp (and the accompanying manifest and CMakeLists.txt)
+provides an example of how to use openCV with ROS to perform image processing.
+
+A text on OpenCV2 (open-source computer vision library) can be found here:
+http://zenithlib.googlecode.com/svn/trunk/books/OpenCV_2_Computer_Vision_Application_Programming_Cookbook.pdf
+
+The commented-out line:
+   // image dilation example:
+   // cv::dilate(cv_ptr->image, cv_ptr->image, cv::Mat(), cv::Point(-1,-1), 10);
+Also works (and shows the form to use cv:: operations)
+
+The present example operates on an image to:
+  *compute the "color distance" from a "target_color"
+   (the target_color vector is hard-coded in this example to be a dim gray: BGR=(30,30,30) ).
+   ("distance" is computed as the "Manhattan" distance in each of the 3 color dimensions, linearly added)
+  *for each pixel, if the color distance exceeds some threshold, overwrite the pixel with black (0,0,0)
+   else overwrite the pixel with white (255,255,255)
+
+The example code is single-stepped, prompting the user to enter a threshold value.
+
+The resulting output can by viewed on the topic "opencv_sample_out" by running (from another terminal):
+
+  rosrun  image_view image_view image:=/opencv_sample_out
+
+

@@ -1,0 +1,63 @@
+decompress besttrackever.tar.gz into directory /home/user/.gazebo/models folder
+  (in my case, /home/wyatt/.gazebo/models)
+
+if you are using the "files" application, hit control-h to see the hidden files (files starting with ".")
+(yes this is annoying detail--but it should improve with revisions)
+
+launch the simulator with the Polaris vehicle using:
+
+   roslaunch atlas_utils atlas_drc_vehicle_fire_hose.launch
+
+When the Gazebo graphical display comes up, choose the "insert" tab on the left;
+you should see your new "Best Track Ever" option on the list if items;  click on it to insert the scene
+In the simulation-display window, you can move the ground view around with your mouse.  Move it until the vehicle is
+  on the track, then click to place the ground here.
+
+
+now, put the Atlas robot in the driver's seat using a "cheat" code.  In a terminal, enter:
+
+  rostopic pub --once /drc_world/robot_enter_car geometry_msgs/Pose '{}'
+
+You should see Atlas seated in the vehicle.
+
+View the scene from Atlas's viewpoint: bring up rviz with:
+rosrun rviz rviz
+
+in left panel, .Global Options, under "fixed frame", choose "pelvis"
+
+in left panel, click "Add"
+  from pop-up window, choose "camera"
+
+A "camera" item will come up in the "displays" panel on the left side of rviz;
+Click to the right of "Image Topic" and choose:
+  multisense_sl->camera->right->image_rect_color
+
+Rviz should now display a panel that shows the road in front of the vehicle with grass on either side.
+
+release the hand-brake with this command in a terminal:
+  rostopic pub --once /drc_vehicle/hand_brake/cmd std_msgs/Float64 '{ data : 0 }'
+
+Turn the steering wheel with the command:
+  rostopic pub --once /drc_vehicle/hand_wheel/cmd std_msgs/Float64 '{ data : 3.14 }'
+(note: I do not see the steering wheel turn, nor the front wheels, but the vehicle will drive in a circle)
+
+gas_pedal commands cause the vehicle to move.  E.g., do: 
+   rostopic pub --once /drc_vehicle/gas_pedal/cmd std_msgs/Float64 '{ data : 1 }'
+
+The vehicle does pause erratically--this is a bug that is to be fixed
+ 
+
+note: may need to delete the standpipe to avoid running into it.
+To do so, in Gazebo window, select the "world" tab, click on "standpipe", right-click and select "delete"
+
+----------------------------image processing-----------------------
+We will be using OpenCV (open-source computer vision library).  You can find a text here:
+http://zenithlib.googlecode.com/svn/trunk/books/OpenCV_2_Computer_Vision_Application_Programming_Cookbook.pdf
+
+(see pg 75)
+
+
+
+
+
+

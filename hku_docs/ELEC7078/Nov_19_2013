@@ -1,0 +1,18 @@
+today:
+  Rotations analysis:  see octave_data_analysis/test_rotations.m
+
+  regularization:  http://en.wikipedia.org/wiki/Tikhonov_regularization
+
+  addl constraints:  qdot_des points to center or range of motion
+  Vlad:
+         qd=(pinvJ*xd + (Eigen::MatrixXd::Identity(J.cols(),J.cols()) - pinvJ*J)*(q0-q)  )*0.01;
+
+   see pub...
+
+  assign: start on a task; use this for final project;
+    will have update/questions next time (last meeting)
+    show any makeups
+    presentations/reports: Dec 10, 11, 12:
+      schedule times w/ everyone
+
+

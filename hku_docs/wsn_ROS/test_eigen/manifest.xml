@@ -1,0 +1,15 @@
+<package>
+  <description brief="test_eigen">
+
+     test_eigen
+
+  </description>
+  <author>Wyatt Newman</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/test_eigen</url>
+  <depend package="roscpp"/>
+  <rosdep name="eigen" />
+</package>
+
+

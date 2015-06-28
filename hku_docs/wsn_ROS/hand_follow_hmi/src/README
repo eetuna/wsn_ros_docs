@@ -1,0 +1,40 @@
+--------------to run----------------------
+start the atlas simulator drcsim-2.0 with:
+   roslaunch atlas_utils atlas_sandia_hands.launch
+
+compile this package (atlas_jnt_ctl) with:
+   rosmake atlas_jnt_ctl
+
+note: rqrs edits to CMakeLists.txt, per Atlas tutorial (see accompanying CMakeLists file)
+also: make sure manifest has the necessary dependencies (see accompanying manifest file) 
+
+start this node running with:
+  rosrun atlas_jnt_ctl atlas_jnt_ctl
+
+Atlas should fall backwards, then from its back on the ground, sit up
+
+------------------------
+
+Tried to do all initializations in constructor of AtlasJointControl, but could not make callbacks work
+ can use a member fnc for callback, but have to set it up in the parent fnc (main)
+
+problem with listener:  can't pass in a listener to class constructor
+
+added class SmootJointSpaceMove
+added class MoveSequencer
+
+initialized array of goal states in MoveSequencer to make robot fall backwards then sit up
+  looks good.
+
+
+---------------------ToDO----------------------
+make goal move array a circular queue
+
+get Jacobian computations in a class
+
+create a SmoothCartesianSpaceMove...  moving attractor? (uses Jacobians)
+demo arms moving in a straight line
+
+extend to knee Jacobian for crawling 
+
+

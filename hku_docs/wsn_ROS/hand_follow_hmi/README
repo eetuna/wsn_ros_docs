@@ -1,0 +1,10 @@
+hand_follow_hmi package:
+compile with: rosmake hand_follow_hmi
+run with: rosrun hand_follow_hmi hand_follow_hmi
+
+Code for performing (crude) J'*dp based motion control of right arm to move
+a hand frame (on palm of right hand) to coincide with a published point goal.
+
+Compatible with demo HMI program "point_cloud_HMI"
+
+Motion is slow and does not plan around collisions, but demonstrates initial integration with sensor-driven motion control
