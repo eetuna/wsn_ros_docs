@@ -1,0 +1,26 @@
+ros tools;
+ros pub/subscribe
+simple simulator/controller
+(from intro notes)
+
+ros services
+
+baxter simu:
+  rostopic list
+  rostopic echo
+  
+commanding joint values:
+
+interactive markers
+
+reachability... (w/ markers)
+
+PCL point selection
+
+fitting model to points
+
+HMI: select object in scene; induce approach
+
+(got Kinect in Baxter model)
+
+careful--was not able to push this (tried to push to rethink)
